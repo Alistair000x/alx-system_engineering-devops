@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# its a script that listen on poer 98 on localhost
+
+nc -l localhost 98
