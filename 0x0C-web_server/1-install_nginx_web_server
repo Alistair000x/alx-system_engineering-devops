@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# This is a script that installs NGINX web server
+
+sudo apt update
+sudo apt install nginx -y
+echo 'Hello World!' | sudo tee /var/html/index.nginx-debian.html
+sudo service nginx restart
