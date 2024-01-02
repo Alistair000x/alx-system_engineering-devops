@@ -1,28 +1,30 @@
 #!/usr/bin/python3
-
-import json
+'''A script that gathers data from an API and exports it to a CSV file.
+'''
+import re
 import requests
-from sys import argv
+import sys
 
-if __name__ == "__main__":
-    user_id = argv[1]
-    url = "https://jsonplaceholder.typicode.com"
 
-    user_response = requests.get(f"{url}/users/{user_id}")
-    user_data = user_response.json()
-    username = user_data.get("username")
+API_URL = 'https://jsonplaceholder.typicode.com'
+'''The API's URL.'''
 
-    tasks_response = requests.get(f"{url}/todos?userId={user_id}")
-    tasks_data = tasks_response.json()
 
-    json_data = {user_id: []}
-    for task in tasks_data:
-        task_data = {
-            "task": task.get("title"),
-            "completed": task.get("completed"),
-            "username": username
-        }
-        json_data[user_id].append(task_data)
-
-    with open(f"{user_id}.json", "w") as json_file:
-        json.dump(json_data, json_file)
+if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        if re.fullmatch(r'\d+', sys.argv[1]):
+            id = int(sys.argv[1])
+            user_res = requests.get('{}/users/{}'.format(API_URL, id)).json()
+            todos_res = requests.get('{}/todos'.format(API_URL)).json()
+            user_name = user_res.get('username')
+            todos = list(filter(lambda x: x.get('userId') == id, todos_res))
+            with open('{}.csv'.format(id), 'w') as file:
+                for todo in todos:
+                    file.write(
+                        '"{}","{}","{}","{}"\n'.format(
+                            id,
+                            user_name,
+                            todo.get('completed'),
+                            todo.get('title')
+                        )
+                    )
